@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Мой Севастополь</title>
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #F2F6FA;
+            --text-main: #1C1C1E;
+            --text-muted: #8E8E93;
+            --accent: #2A5C8D;
+            --white: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
+        #app { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+
+        /* Экраны и анимации */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); overflow-y: auto; overflow-x: hidden;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: calc(90px + env(safe-area-inset-bottom));
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+            z-index: 10;
+        }
+        .screen.active { opacity: 1; pointer-events: auto; z-index: 20; }
+        
+        /* Для выезжающих экранов (ЖКХ) */
+        .screen.slide-in {
+            transform: translateX(100%); opacity: 1; pointer-events: none; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 30;
+        }
+        .screen.slide-in.active-slide { transform: translateX(0); pointer-events: auto; }
+        .screen-bg-shift { transform: translateX(-20%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+
+        .content { padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+        .header h1 { font-size: 28px; font-weight: 700; }
+        .header p { color: var(--text-muted); font-size: 14px; margin-bottom: 4px; }
+        .bell-icon { font-size: 24px; color: var(--text-main); }
+
+        /* Виджеты */
+        .weather-widget { background: linear-gradient(135deg, #1C4A78, #5A9BD5); border-radius: 20px; padding: 20px; color: white; margin-bottom: 24px; position: relative; }
+        .weather-widget .temp { font-size: 42px; font-weight: bold; margin-bottom: 10px; }
+        .raid-badge { display: inline-flex; align-items: center; background: #34C759; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .weather-info { position: absolute; right: 20px; top: 20px; text-align: right; font-size: 13px; opacity: 0.9; }
+
+        /* Секции */
+        .section-title { font-size: 20px; font-weight: 600; margin-bottom: 16px; margin-top: 10px; }
+        .quick-services { display: flex; justify-content: space-between; margin-bottom: 24px; }
+        .service-btn { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 12px; font-weight: 500; width: 70px; cursor: pointer; }
+        .service-icon { width: 54px; height: 54px; background: #EAF2F8; color: var(--accent); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .card { background: var(--white); border-radius: 20px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; position: relative; overflow: hidden; }
+        .card.large { grid-column: span 2; }
+        .card h3 { font-size: 16px; margin-bottom: 8px; }
+        .card p { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+        .btn-small { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+
+        /* Специфичные карточки */
+        .card-egks { background: linear-gradient(135deg, #2c3e50, #3498db); color: white; border-radius: 20px; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .card-egks p { color: rgba(255,255,255,0.8); margin-bottom: 4px; }
+        .card-egks h2 { font-size: 24px; }
+        
+        .map-placeholder { width: 100%; height: 180px; background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop') center/cover; border-radius: 20px; margin-bottom: 16px; position: relative; }
+        .map-pin { position: absolute; background: white; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; }
+        .map-pin ion-icon { color: var(--accent); }
+
+        /* Прогноз погоды горизонтальный скролл */
+        .forecast-scroll { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; margin-top: 16px; }
+        .forecast-scroll::-webkit-scrollbar { display: none; }
+        .forecast-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 16px; text-align: center; min-width: 60px; }
+
+        /* Навигация (Header для внутренних) */
+        .nav-bar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; }
+        .back-btn { font-size: 24px; color: var(--accent); cursor: pointer; }
+        .nav-title { font-size: 18px; font-weight: 600; }
+
+        /* Таб-бар */
+        .tab-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: calc(65px + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 100; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 500; margin-top: 10px; width: 25%; cursor: pointer; }
+        .tab-item.active { color: var(--accent); }
+        .tab-item ion-icon { font-size: 24px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    
+    <div id="tab-main" class="screen active">
+        <div class="content">
+            <div class="header">
+                <div>
+                    <p>Добрый день, Константин!</p>
+                    <h1>Мой Севастополь</h1>
+                </div>
+                <ion-icon name="notifications-outline" class="bell-icon"></ion-icon>
+            </div>
+
+            <div class="weather-widget">
+                <div class="temp">27°C</div>
+                <div class="raid-badge"><ion-icon name="checkmark-circle"></ion-icon> Рейд открыт</div>
+                <div class="weather-info">
+                    <p>Ветер: С/З 5 м/с</p>
+                    <p>Волны: 0.5 м</p>
+                    <p style="margin-top: 6px; font-size: 11px;">Учкуевка: 23°C</p>
+                </div>
+            </div>
+
+            <h2 class="section-title">Мои сервисы</h2>
+            <div class="quick-services">
+                <div class="service-btn" onclick="openSlide('slide-jkh')">
+                    <div class="service-icon"><ion-icon name="wallet-outline"></ion-icon></div><span>Оплатить<br>ЖКХ</span>
+                </div>
+                <div class="service-btn" onclick="switchTab('tab-services', 1)">
+                    <div class="service-icon"><ion-icon name="bus-outline"></ion-icon></div><span>ЕГКС</span>
+                </div>
+                <div class="service-btn">
+                    <div class="service-icon"><ion-icon name="medkit-outline"></ion-icon></div><span>Запись<br>к врачу</span>
+                </div>
+                <div class="service-btn" onclick="switchTab('tab-services', 1)">
+                    <div class="service-icon"><ion-icon name="car-outline"></ion-icon></div><span>Парковки</span>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card" onclick="openSlide('slide-jkh')">
+                    <h3>ЖКХ и Платежи</h3>
+                    <p>К оплате: <strong>2 500 ₽</strong></p>
+                    <button class="btn-small">Оплатить</button>
+                </div>
+                <div class="card" onclick="switchTab('tab-services', 1)">
+                    <h3>Транспорт</h3>
+                    <p>Баланс: <strong>1000 ₽</strong></p>
+                    <button class="btn-small" style="background: #EAF2F8; color: var(--accent);">Карта парковок</button>
+                </div>
+                <div class="card large" style="background: url('https://images.unsplash.com/photo-1572074360673-3e1b7c3d790d?q=80&w=600&auto=format&fit=crop') center/cover; color: white;">
+                    <div style="background: rgba(0,0,0,0.4); border-radius: 20px; padding: 16px; margin: -16px; height: calc(100% + 32px);">
+                        <h3>Туризм и Культура</h3>
+                        <p style="color: #eee;">Основные события недели</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-services" class="screen">
+        <div class="content">
+            <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 20px;">Транспорт</h1>
+            
+            <div class="map-placeholder" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop'); opacity: 0.9;">
+                <div class="map-pin" style="top: 20px; left: 20px;"><ion-icon name="bus"></ion-icon> Остановка</div>
+                <div class="map-pin" style="bottom: 20px; right: 20px; background: #FF3B30; color: white;">50 ₽/час</div>
+            </div>
+
+            <div class="dashboard-grid" style="margin-bottom: 16px;">
+                <div class="card">
+                    <ion-icon name="bus-outline" style="font-size: 24px; color: var(--accent); margin-bottom: 8px;"></ion-icon>
+                    <h3>Автобус</h3>
+                    <p style="margin:0;">Маршруты</p>
+                </div>
+                <div class="card">
+                    <ion-icon name="boat-outline" style="font-size: 24px; color: var(--accent); margin-bottom: 8px;"></ion-icon>
+                    <h3>Катера</h3>
+                    <p style="margin:0;">Графская — Северная</p>
+                </div>
+            </div>
+
+            <h2 class="section-title">Мои карты ЕГКС</h2>
+            <div class="card-egks">
+                <div>
+                    <p>ЕГКС •••• 4291</p>
+                    <h2>350 ₽</h2>
+                </div>
+                <button class="btn-small" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);">Пополнить</button>
+            </div>
+
+            <h2 class="section-title">Парковка</h2>
+            <div class="dashboard-grid">
+                <div class="card" style="text-align: center;">
+                    <img src="https://pngimg.com/uploads/lada/lada_PNG68.png" style="width: 80%; margin-bottom: 10px; opacity: 0.8;" alt="car">
+                    <p style="margin:0; font-weight: 600; color: var(--text-main);">А 123 АА 92</p>
+                </div>
+                <div>
+                    <div class="card" style="margin-bottom: 16px;">
+                        <p style="margin-bottom: 4px; font-size: 12px;">Активная парковка</p>
+                        <h3 style="margin-bottom: 8px;">⏱ 00:13</h3>
+                        <button class="btn-small" style="width: 100%;">Завершить</button>
+                    </div>
+                    <div class="card">
+                        <h3 style="margin-bottom: 4px; color: #FF3B30;">Штрафы</h3>
+                        <p style="margin:0; font-size: 12px;">1 штраф к оплате</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-city" class="screen">
+        <div class="content">
+            <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 20px;">Севастополь</h1>
+            
+            <div class="weather-widget" style="background: linear-gradient(135deg, #1A2980, #26D0CE);">
+                <p style="opacity: 0.8; font-size: 14px; margin-bottom: 8px;">Сегодня, Ясно</p>
+                <div style="display: flex; align-items: baseline; gap: 10px;">
+                    <div class="temp" style="margin: 0;">27°C</div>
+                    <p style="opacity: 0.8; font-size: 14px;">Ощущается как 29°C</p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 16px; font-size: 12px; opacity: 0.9; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 16px;">
+                    <div><ion-icon name="sunny"></ion-icon> УФ: 7 (Высокий)</div>
+                    <div>Рассвет: 05:45</div>
+                    <div>Закат: 20:15</div>
+                </div>
+
+                <div class="forecast-scroll">
+                    <div class="forecast-item">Ср<br><ion-icon name="sunny" style="margin: 6px 0; color: #FFD700;"></ion-icon><br>28°</div>
+                    <div class="forecast-item">Чт<br><ion-icon name="sunny" style="margin: 6px 0; color: #FFD700;"></ion-icon><br>29°</div>
+                    <div class="forecast-item">Пт<br><ion-icon name="partly-sunny" style="margin: 6px 0;"></ion-icon><br>27°</div>
+                    <div class="forecast-item">Сб<br><ion-icon name="cloudy" style="margin: 6px 0;"></ion-icon><br>25°</div>
+                    <div class="forecast-item">Вс<br><ion-icon name="sunny" style="margin: 6px 0; color: #FFD700;"></ion-icon><br>27°</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Пляжи и море</h2>
+            <div class="map-placeholder" style="height: 300px; background-image: url('https://images.unsplash.com/photo-1582972236019-ea4af5ea6aa4?q=80&w=800&auto=format&fit=crop');">
+                <div class="map-pin" style="top: 40px; right: 20px; flex-direction: column; align-items: flex-start;">
+                    <span style="color: var(--text-muted); font-size: 10px;">Учкуевка</span>
+                    <span style="font-size: 14px;">Вода 23°C</span>
+                </div>
+                <div class="map-pin" style="bottom: 80px; left: 20px; flex-direction: column; align-items: flex-start;">
+                    <span style="color: var(--text-muted); font-size: 10px;">Омега</span>
+                    <span style="font-size: 14px;">Вода 24°C</span>
+                </div>
+                <div class="map-pin" style="bottom: 20px; right: 40px; flex-direction: column; align-items: flex-start;">
+                    <span style="color: var(--text-muted); font-size: 10px;">Хрустальный</span>
+                    <span style="font-size: 14px;">Вода 22°C</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="slide-jkh" class="screen slide-in">
+        <div class="content">
+            <div class="nav-bar">
+                <ion-icon name="chevron-back-outline" class="back-btn" onclick="closeSlide('slide-jkh')"></ion-icon>
+                <div class="nav-title">ЖКХ</div>
+                <div style="width: 24px;"></div>
+            </div>
+
+            <div class="weather-widget" style="padding: 24px 20px;">
+                <p style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">К оплате за сентябрь</p>
+                <div class="temp" style="margin-bottom: 16px;">3 850 ₽</div>
+                <button class="btn-small" style="background: white; color: var(--accent);">Оплатить все</button>
+            </div>
+
+            <div class="card" style="display: flex; align-items: center; margin-bottom: 12px; padding: 12px 16px;">
+                <div class="service-icon" style="background: #FFF4E5; color: #FF9500; width: 40px; height: 40px; margin: 0 16px 0 0; font-size: 20px;"><ion-icon name="bulb-outline"></ion-icon></div>
+                <div style="flex-grow: 1;">
+                    <h4 style="font-size: 15px; margin-bottom: 2px;">Электроэнергия</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--text-muted);">Севэнергосбыт</p>
+                </div>
+                <div style="text-align: right;">
+                    <h4 style="font-size: 15px; margin-bottom: 2px;">1 200 ₽</h4>
+                    <p style="margin: 0; font-size: 11px; color: #FF3B30;">Не оплачено</p>
+                </div>
+            </div>
+
+            <div class="card" style="display: flex; align-items: center; margin-bottom: 12px; padding: 12px 16px;">
+                <div class="service-icon" style="background: #E5F0FF; color: #007AFF; width: 40px; height: 40px; margin: 0 16px 0 0; font-size: 20px;"><ion-icon name="water-outline"></ion-icon></div>
+                <div style="flex-grow: 1;">
+                    <h4 style="font-size: 15px; margin-bottom: 2px;">Вода</h4>
+                    <p style="margin: 0; font-size: 12px; color: var(--text-muted);">Водоканал</p>
+                </div>
+                <div style="text-align: right;">
+                    <h4 style="font-size: 15px; margin-bottom: 2px;">850 ₽</h4>
+                    <p style="margin: 0; font-size: 11px; color: #FF3B30;">Не оплачено</p>
+                </div>
+            </div>
+            
+            <button class="btn-small" style="width: 100%; margin-top: 10px; background: #EAF2F8; color: var(--accent);">Передать показания</button>
+        </div>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('tab-main', 0)" id="nav-0">
+            <ion-icon name="home"></ion-icon> Главная
+        </div>
+        <div class="tab-item" onclick="switchTab('tab-services', 1)" id="nav-1">
+            <ion-icon name="grid-outline"></ion-icon> Сервисы
+        </div>
+        <div class="tab-item" onclick="switchTab('tab-city', 2)" id="nav-2">
+            <ion-icon name="location-outline"></ion-icon> Город
+        </div>
+        <div class="tab-item" onclick="switchTab('tab-main', 3)" id="nav-3">
+            <ion-icon name="person-outline"></ion-icon> Профиль
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Логика переключения нижних вкладок (Таб-бар)
+    function switchTab(tabId, navIndex) {
+        // Убираем активный класс со всех экранов и скрываем их
+        document.querySelectorAll('.screen:not(.slide-in)').forEach(el => el.classList.remove('active'));
+        // Делаем активным нужный экран
+        document.getElementById(tabId).classList.add('active');
+
+        // Обновляем цвета иконок в таб-баре
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('nav-' + navIndex).classList.add('active');
+        
+        // Если переключаем табы, закрываем все выезжающие окна (например, ЖКХ)
+        closeSlide('slide-jkh');
+    }
+
+    // Логика выезжающих экранов поверх основного (стиль iOS)
+    function openSlide(slideId) {
+        // Сдвигаем активную вкладку немного влево для эффекта глубины
+        document.querySelector('.screen.active:not(.slide-in)').classList.add('screen-bg-shift');
+        // Выдвигаем новый экран справа
+        document.getElementById(slideId).classList.add('active-slide');
+    }
+
+    function closeSlide(slideId) {
+        // Возвращаем основную вкладку на место
+        const activeMain = document.querySelector('.screen-bg-shift');
+        if (activeMain) activeMain.classList.remove('screen-bg-shift');
+        // Прячем выехавший экран
+        document.getElementById(slideId).classList.remove('active-slide');
+    }
+</script>
+
+</body>
+</html>
