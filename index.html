@@ -54,12 +54,10 @@
         .bell-icon { font-size: 24px; color: var(--text-main); cursor: pointer; position: relative; }
         .bell-badge { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid var(--bg-color); }
 
-        /* Обновленный виджет погоды */
         .weather-widget { background: linear-gradient(135deg, #1C4A78, #5A9BD5); border-radius: 20px; padding: 20px; color: white; margin-bottom: 24px; position: relative; overflow: hidden; cursor: pointer; min-height: 140px; }
         .weather-widget .temp { font-size: 42px; font-weight: bold; margin-bottom: 10px; position: relative; z-index: 2; }
         .raid-badge { display: inline-flex; align-items: center; background: #34C759; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; position: relative; z-index: 2; }
         
-        /* Позиционирование ветров и волн */
         .weather-info { position: absolute; right: 20px; bottom: 20px; text-align: right; font-size: 13px; opacity: 0.9; z-index: 2; }
         
         .sun-animation { position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: radial-gradient(circle, #FFD700 20%, rgba(255, 215, 0, 0) 70%); border-radius: 50%; animation: pulse 3s infinite ease-in-out; z-index: 1; }
@@ -120,11 +118,35 @@
         .ios-toggle:checked { background: var(--success); }
         .ios-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 26px; height: 26px; border-radius: 50%; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.3s; }
         .ios-toggle:checked::after { transform: translateX(20px); }
+
+        /* Стили для всплывающей подсказки установки PWA */
+        .install-prompt {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            padding: 12px 16px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 12px; z-index: 9999;
+            width: 90%; max-width: 350px; border: 1px solid rgba(0,0,0,0.05);
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .install-prompt.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+        .install-prompt::after {
+            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+            border-width: 8px 8px 0; border-style: solid; border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
+        }
     </style>
 </head>
 <body>
 
 <div id="app">
+
+    <div id="install-prompt" class="install-prompt">
+        <img src="logo.jpg" alt="Logo" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;">
+        <div style="flex-grow: 1; font-size: 13px; line-height: 1.3;">
+            Установите приложение:<br>
+            Нажмите <ion-icon name="share-outline" style="vertical-align: middle; font-size: 18px; color: #007AFF;"></ion-icon> и выберите <b>«На экран "Домой"»</b>
+        </div>
+        <ion-icon name="close-circle" style="font-size: 24px; color: var(--text-muted); cursor: pointer;" onclick="hideInstallPrompt()"></ion-icon>
+    </div>
     
     <div id="tab-main" class="screen active">
         <div class="content">
@@ -473,7 +495,6 @@
         </div>
     </div>
 
-
     <div id="slide-tourism" class="screen slide-in">
         <div class="content">
             <div class="nav-bar">
@@ -594,7 +615,6 @@
         </div>
     </div>
 
-
     <div id="slide-boats" class="screen slide-in">
         <div class="content">
             <div class="nav-bar">
@@ -682,7 +702,6 @@
             </div>
             
             <button class="btn-small" style="width: 100%; margin-top: 10px; background: #EAF2F8; color: var(--accent); padding: 14px; font-size: 16px;">Передать показания</button>
-            </div>
         </div>
     </div>
 
@@ -776,12 +795,14 @@
 </div>
 
 <script>
+    // Инициализация Яндекс Карт
     ymaps.ready(initMaps);
     function initMaps() {
         var transportMap = new ymaps.Map("map-transport", { center: [44.6166, 33.5254], zoom: 13, controls: [] });
         var cityMap = new ymaps.Map("map-city", { center: [44.6166, 33.5254], zoom: 11, controls: [] });
     }
 
+    // Навигация
     function switchTab(tabId, navIndex) {
         document.querySelectorAll('.screen:not(.slide-in)').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
@@ -806,6 +827,48 @@
          const activeMain = document.querySelector('.screen-bg-shift');
          if (activeMain) activeMain.classList.remove('screen-bg-shift');
     }
+
+    // --- СВАЙП НАЗАД ---
+    let touchstartX = 0;
+    document.addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+
+    document.addEventListener('touchend', e => {
+        let touchendX = e.changedTouches[0].screenX;
+        // Если жест начат с левого края (от 0 до 40px) и свайп вправо больше 80px
+        if (touchstartX < 40 && (touchendX - touchstartX) > 80) {
+            const activeSlide = document.querySelector('.screen.slide-in.active-slide');
+            if (activeSlide) {
+                closeSlide(activeSlide.id);
+            }
+        }
+    }, {passive: true});
+
+    // --- ПОДСКАЗКА УСТАНОВКИ PWA (iOS) ---
+    function showInstallPrompt() {
+        const isIos = () => {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            return /iphone|ipad|ipod/.test(userAgent);
+        };
+        const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+        
+        // Показываем только на iPhone и только если не в режиме PWA
+        if (isIos() && !isInStandaloneMode()) {
+            setTimeout(() => {
+                const prompt = document.getElementById('install-prompt');
+                if (prompt) prompt.classList.add('show');
+            }, 1500); // Появление через 1.5 секунды
+        }
+    }
+
+    function hideInstallPrompt() {
+        const prompt = document.getElementById('install-prompt');
+        if (prompt) prompt.classList.remove('show');
+    }
+
+    window.addEventListener('load', showInstallPrompt);
+
 </script>
 
 </body>
