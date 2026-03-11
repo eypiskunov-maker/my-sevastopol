@@ -880,8 +880,25 @@
     // Инициализация Яндекс Карт
     ymaps.ready(initMaps);
     function initMaps() {
+        // Карта транспорта
         var transportMap = new ymaps.Map("map-transport", { center: [44.6166, 33.5254], zoom: 13, controls: [] });
+        
+        // Карта города (для пляжей)
         var cityMap = new ymaps.Map("map-city", { center: [44.6166, 33.5254], zoom: 11, controls: [] });
+
+        // Создаем инструмент поиска Яндекса
+        var searchControl = new ymaps.control.SearchControl({
+            options: {
+                provider: 'yandex#search',
+                visible: false // <-- ВОТ ЭТА СТРОЧКА СКРЫВАЕТ ПОИСК
+            }
+        });
+
+        // Добавляем невидимый поиск на карту
+        cityMap.controls.add(searchControl);
+
+        // Как только карта загрузилась — автоматически ищем пляжи в фоне
+        searchControl.search('Севастополь пляж');
     }
 
     // Навигация
