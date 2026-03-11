@@ -429,8 +429,8 @@
                 <input type="checkbox" class="ios-toggle" checked>
             </div>
 
-            <div id="install-button-container" style="display: none; margin-top: 32px;">
-                <button id="install-button" class="btn-small" style="width: 100%; background: var(--success); font-size: 16px; padding: 16px; border-radius: 16px; display: flex; justify-content: center; align-items: center;">
+            <div id="install-button-container" style="display: block; margin-top: 32px;">
+                <button id="install-button" style="width: 100%; background: var(--success); color: white; font-size: 16px; font-weight: 600; padding: 16px; border-radius: 16px; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer;">
                     <ion-icon name="download-outline" style="font-size: 20px; margin-right: 8px;"></ion-icon> Установить на телефон
                 </button>
             </div>
@@ -618,15 +618,15 @@
                 </div>
             </div>
 
-            <h2 class="section-title">Популярные места</h2>
-            <div class="dashboard-grid">
+           <h2 class="section-title">Популярные места</h2>
+             <div class="dashboard-grid">
                 <div class="card" style="background: url('place1.jpg') center/cover; color: white; height: 140px;">
                     <div style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 20px; padding: 12px; margin: -16px; height: calc(100% + 32px); display: flex; flex-direction: column; justify-content: flex-end;">
                         <h3 style="font-size: 14px; margin-bottom: 2px;">Графская пристань</h3>
                         <p style="font-size: 10px; color: #ddd; margin: 0;">Исторический памятник</p>
                     </div>
                 </div>
-                <div class="card" style="background: url('place2.jpg') center/cover; color: white; height: 140px;">
+                 <div class="card" style="background: url('place2.jpg') center/cover; color: white; height: 140px;">
                     <div style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 20px; padding: 12px; margin: -16px; height: calc(100% + 32px); display: flex; flex-direction: column; justify-content: flex-end;">
                         <h3 style="font-size: 14px; margin-bottom: 2px;">Херсонес</h3>
                         <p style="font-size: 10px; color: #ddd; margin: 0;">Античный город, AR</p>
@@ -941,14 +941,15 @@
     }, {passive: true});
 
 
-    // === ЛОГИКА УМНОЙ КНОПКИ УСТАНОВКИ ===
+    // === ЛОГИКА УСТАНОВКИ ПРИЛОЖЕНИЯ ===
     let deferredPrompt;
     const installBtnContainer = document.getElementById('install-button-container');
     const installBtn = document.getElementById('install-button');
+    const installPrompt = document.getElementById('install-prompt');
 
-    // Проверка: установлено ли уже приложение?
+    // Проверка: установлено ли приложение
     const isStandalone = () => {
-        return ('standalone' in window.navigator) && (window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
+        return ('standalone' in window.navigator && window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
     };
     
     const isIos = () => {
@@ -956,61 +957,60 @@
         return /iphone|ipad|ipod/.test(userAgent);
     };
 
-    // Функция показа нашей всплывающей подсказки (для iOS)
-    function showIosPrompt() {
-        const prompt = document.getElementById('install-prompt');
-        if (prompt) prompt.classList.add('show');
+    // 1. Мгновенно убираем кнопку в Профиле, если уже установлено (Без ожидания VPN!)
+    if (isStandalone()) {
+        if(installBtnContainer) installBtnContainer.style.display = 'none';
+    } else {
+        if(installBtnContainer) installBtnContainer.style.display = 'block';
+    }
+
+    // 2. Автоматическая подсказка для iOS при открытии сайта
+    if (isIos() && !isStandalone()) {
+        setTimeout(() => {
+            if(installPrompt) installPrompt.classList.add('show');
+        }, 2000); // Выедет через 2 секунды после открытия
+    }
+
+    // 3. Android: Ловим родное окно от Google (НЕ блокируя его авто-показ)
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Мы специально НЕ пишем e.preventDefault(), чтобы окно Chrome вылезало само!
+        deferredPrompt = e; 
+    });
+
+    // 4. Действие при нажатии на нашу кнопку в "Профиле"
+    if(installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (isIos()) {
+                // На iPhone - выкатываем нашу подсказку
+                if(installPrompt) installPrompt.classList.add('show');
+            } else {
+                // На Android - вызываем окно установки
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        installBtnContainer.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                } else {
+                    // Если на Android событие еще не поймалось 
+                    alert('Для установки откройте меню браузера (три точки) и выберите «Добавить на главный экран»');
+                }
+            }
+        });
     }
 
     function hideInstallPrompt() {
-        const prompt = document.getElementById('install-prompt');
-        if (prompt) prompt.classList.remove('show');
+        if(installPrompt) installPrompt.classList.remove('show');
     }
 
-    // 1. Сценарий для iOS: показываем кнопку, если еще не установлено
-    if (isIos() && !isStandalone()) {
-        if(installBtnContainer) installBtnContainer.style.display = 'block';
-        if(installBtn) {
-            installBtn.addEventListener('click', () => {
-                showIosPrompt(); // При клике выезжает наша подсказка "Нажмите Поделиться..."
-            });
-        }
-    }
-
-    // 2. Сценарий для Android: перехватываем системное событие установки
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Отменяем автоматический показ системного окна
-        e.preventDefault();
-        // Сохраняем событие, чтобы вызвать его позже при клике на кнопку
-        deferredPrompt = e;
-        
-        // Показываем нашу кнопку в Профиле
-        if(installBtnContainer) installBtnContainer.style.display = 'block';
-
-        if(installBtn) {
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    // Вызываем системное красивое окно Google
-                    deferredPrompt.prompt();
-                    // Ждем ответа пользователя
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        // Если пользователь нажал "Установить" - прячем кнопку
-                        installBtnContainer.style.display = 'none';
-                    }
-                    // Очищаем переменную
-                    deferredPrompt = null;
-                }
-            });
-        }
-    });
-
-    // 3. Общее правило: если приложение успешно установлено - прячем кнопку навсегда
+    // 5. Если приложение успешно установили - прячем всё навсегда
     window.addEventListener('appinstalled', (evt) => {
         if(installBtnContainer) installBtnContainer.style.display = 'none';
+        hideInstallPrompt();
     });
 
-    // Регистрация Service Worker для Android
+    // Регистрация Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('sw.js');
