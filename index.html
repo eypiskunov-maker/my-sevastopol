@@ -8,8 +8,8 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="logo.jpg">
-    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo-192.png">
+    <link rel="icon" type="image/png" href="logo-192.png">
     
     <title>Мой Севастополь</title>
     
@@ -142,7 +142,7 @@
 <div id="app">
 
     <div id="install-prompt" class="install-prompt">
-        <img src="logo.jpg" alt="Logo" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;">
+        <img src="logo-192.png" alt="Logo" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;">
         <div style="flex-grow: 1; font-size: 13px; line-height: 1.3;">
             Установите приложение:<br>
             Нажмите <ion-icon name="share-outline" style="vertical-align: middle; font-size: 18px; color: #007AFF;"></ion-icon> и выберите <b>«На экран "Домой"»</b>
@@ -429,7 +429,13 @@
                 <input type="checkbox" class="ios-toggle" checked>
             </div>
 
-            <div style="margin-top: 32px; text-align: center; color: var(--danger); font-weight: 600; padding: 16px; background: var(--white); border-radius: 16px; cursor: pointer;">
+            <div id="install-button-container" style="display: none; margin-top: 32px;">
+                <button id="install-button" class="btn-small" style="width: 100%; background: var(--success); font-size: 16px; padding: 16px; border-radius: 16px; display: flex; justify-content: center; align-items: center;">
+                    <ion-icon name="download-outline" style="font-size: 20px; margin-right: 8px;"></ion-icon> Установить на телефон
+                </button>
+            </div>
+
+            <div style="margin-top: 16px; text-align: center; color: var(--danger); font-weight: 600; padding: 16px; background: var(--white); border-radius: 16px; cursor: pointer;">
                 Выйти из аккаунта
             </div>
         </div>
@@ -626,7 +632,9 @@
                         <p style="font-size: 10px; color: #ddd; margin: 0;">Античный город, AR</p>
                     </div>
                 </div>
-            </div> <h2 class="section-title" style="margin-top: 24px;">Афиша событий</h2>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 24px;">Афиша событий</h2>
             <div class="card" style="margin-bottom: 12px;">
                 <h4 style="margin-bottom: 4px;">Спектакль «Севастопольский вальс»</h4>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Драмтеатр им. Луначарского • 15 Октября</p>
@@ -880,24 +888,13 @@
     // Инициализация Яндекс Карт
     ymaps.ready(initMaps);
     function initMaps() {
-        // Карта транспорта
         var transportMap = new ymaps.Map("map-transport", { center: [44.6166, 33.5254], zoom: 13, controls: [] });
-        
-        // Карта города (для пляжей)
         var cityMap = new ymaps.Map("map-city", { center: [44.6166, 33.5254], zoom: 11, controls: [] });
-
-        // Создаем инструмент поиска Яндекса
+        
         var searchControl = new ymaps.control.SearchControl({
-            options: {
-                provider: 'yandex#search',
-                visible: false // <-- ВОТ ЭТА СТРОЧКА СКРЫВАЕТ ПОИСК
-            }
+            options: { provider: 'yandex#search', visible: false }
         });
-
-        // Добавляем невидимый поиск на карту
         cityMap.controls.add(searchControl);
-
-        // Как только карта загрузилась — автоматически ищем пляжи в фоне
         searchControl.search('Севастополь пляж');
     }
 
@@ -943,20 +940,26 @@
         }
     }, {passive: true});
 
-    // --- ПОДСКАЗКА УСТАНОВКИ PWA (iOS) ---
-    function showInstallPrompt() {
-        const isIos = () => {
-            const userAgent = window.navigator.userAgent.toLowerCase();
-            return /iphone|ipad|ipod/.test(userAgent);
-        };
-        const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-        
-        if (isIos() && !isInStandaloneMode()) {
-            setTimeout(() => {
-                const prompt = document.getElementById('install-prompt');
-                if (prompt) prompt.classList.add('show');
-            }, 200);
-        }
+
+    // === ЛОГИКА УМНОЙ КНОПКИ УСТАНОВКИ ===
+    let deferredPrompt;
+    const installBtnContainer = document.getElementById('install-button-container');
+    const installBtn = document.getElementById('install-button');
+
+    // Проверка: установлено ли уже приложение?
+    const isStandalone = () => {
+        return ('standalone' in window.navigator) && (window.navigator.standalone) || window.matchMedia('(display-mode: standalone)').matches;
+    };
+    
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+    };
+
+    // Функция показа нашей всплывающей подсказки (для iOS)
+    function showIosPrompt() {
+        const prompt = document.getElementById('install-prompt');
+        if (prompt) prompt.classList.add('show');
     }
 
     function hideInstallPrompt() {
@@ -964,14 +967,56 @@
         if (prompt) prompt.classList.remove('show');
     }
 
-    window.addEventListener('DOMContentLoaded', showInstallPrompt);
+    // 1. Сценарий для iOS: показываем кнопку, если еще не установлено
+    if (isIos() && !isStandalone()) {
+        if(installBtnContainer) installBtnContainer.style.display = 'block';
+        if(installBtn) {
+            installBtn.addEventListener('click', () => {
+                showIosPrompt(); // При клике выезжает наша подсказка "Нажмите Поделиться..."
+            });
+        }
+    }
 
-// Регистрация Service Worker для Android
+    // 2. Сценарий для Android: перехватываем системное событие установки
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Отменяем автоматический показ системного окна
+        e.preventDefault();
+        // Сохраняем событие, чтобы вызвать его позже при клике на кнопку
+        deferredPrompt = e;
+        
+        // Показываем нашу кнопку в Профиле
+        if(installBtnContainer) installBtnContainer.style.display = 'block';
+
+        if(installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    // Вызываем системное красивое окно Google
+                    deferredPrompt.prompt();
+                    // Ждем ответа пользователя
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        // Если пользователь нажал "Установить" - прячем кнопку
+                        installBtnContainer.style.display = 'none';
+                    }
+                    // Очищаем переменную
+                    deferredPrompt = null;
+                }
+            });
+        }
+    });
+
+    // 3. Общее правило: если приложение успешно установлено - прячем кнопку навсегда
+    window.addEventListener('appinstalled', (evt) => {
+        if(installBtnContainer) installBtnContainer.style.display = 'none';
+    });
+
+    // Регистрация Service Worker для Android
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('sw.js');
         });
     }
+
 </script>
 
 </body>
