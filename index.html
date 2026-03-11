@@ -888,8 +888,25 @@
     // Инициализация Яндекс Карт
     ymaps.ready(initMaps);
     function initMaps() {
-        var transportMap = new ymaps.Map("map-transport", { center: [44.6166, 33.5254], zoom: 13, controls: [] });
-        var cityMap = new ymaps.Map("map-city", { center: [44.6166, 33.5254], zoom: 11, controls: [] });
+        // Карта транспорта
+        var transportMap = new ymaps.Map("map-transport", { 
+            center: [44.6166, 33.5254], 
+            zoom: 13, 
+            controls: [] 
+        });
+
+        // Добавляем слой "Пробки" и сразу включаем его по умолчанию
+        var trafficControl = new ymaps.control.TrafficControl({
+            state: { trafficShown: true }
+        });
+        transportMap.controls.add(trafficControl);
+        
+        // Карта города (для пляжей)
+        var cityMap = new ymaps.Map("map-city", { 
+            center: [44.6166, 33.5254], 
+            zoom: 11, 
+            controls: [] 
+        });
         
         var searchControl = new ymaps.control.SearchControl({
             options: { provider: 'yandex#search', visible: false }
