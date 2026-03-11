@@ -612,30 +612,21 @@
                 </div>
             </div>
 
-           <h2 class="section-title">Популярные места</h2>
-             <div class="dashboard-grid">
+            <h2 class="section-title">Популярные места</h2>
+            <div class="dashboard-grid">
                 <div class="card" style="background: url('place1.jpg') center/cover; color: white; height: 140px;">
                     <div style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 20px; padding: 12px; margin: -16px; height: calc(100% + 32px); display: flex; flex-direction: column; justify-content: flex-end;">
                         <h3 style="font-size: 14px; margin-bottom: 2px;">Графская пристань</h3>
                         <p style="font-size: 10px; color: #ddd; margin: 0;">Исторический памятник</p>
                     </div>
                 </div>
-                 <div class="card" style="background: url('place2.jpg') center/cover; color: white; height: 140px;">
+                <div class="card" style="background: url('place2.jpg') center/cover; color: white; height: 140px;">
                     <div style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 20px; padding: 12px; margin: -16px; height: calc(100% + 32px); display: flex; flex-direction: column; justify-content: flex-end;">
                         <h3 style="font-size: 14px; margin-bottom: 2px;">Херсонес</h3>
                         <p style="font-size: 10px; color: #ddd; margin: 0;">Античный город, AR</p>
                     </div>
                 </div>
-            </div>
-                 <div class="card" style="background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Chersones_Taurica_bell.jpg/800px-Chersones_Taurica_bell.jpg') center/cover; color: white; height: 140px;">
-                    <div style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 20px; padding: 12px; margin: -16px; height: calc(100% + 32px); display: flex; flex-direction: column; justify-content: flex-end;">
-                        <h3 style="font-size: 14px; margin-bottom: 2px;">Херсонес</h3>
-                        <p style="font-size: 10px; color: #ddd; margin: 0;">Античный город, AR</p>
-                    </div>
-                </div>
-            </div>
-
-            <h2 class="section-title" style="margin-top: 24px;">Афиша событий</h2>
+            </div> <h2 class="section-title" style="margin-top: 24px;">Афиша событий</h2>
             <div class="card" style="margin-bottom: 12px;">
                 <h4 style="margin-bottom: 4px;">Спектакль «Севастопольский вальс»</h4>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Драмтеатр им. Луначарского • 15 Октября</p>
@@ -927,7 +918,6 @@
 
     document.addEventListener('touchend', e => {
         let touchendX = e.changedTouches[0].screenX;
-        // Если жест начат с левого края (от 0 до 40px) и свайп вправо больше 80px
         if (touchstartX < 40 && (touchendX - touchstartX) > 80) {
             const activeSlide = document.querySelector('.screen.slide-in.active-slide');
             if (activeSlide) {
@@ -944,12 +934,11 @@
         };
         const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
         
-        // Показываем только на iPhone и только если не в режиме PWA
         if (isIos() && !isInStandaloneMode()) {
             setTimeout(() => {
                 const prompt = document.getElementById('install-prompt');
                 if (prompt) prompt.classList.add('show');
-            }, 200); // Появление через 1.5 секунды
+            }, 200);
         }
     }
 
