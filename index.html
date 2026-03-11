@@ -966,6 +966,12 @@
 
     window.addEventListener('DOMContentLoaded', showInstallPrompt);
 
+// Регистрация Service Worker для Android
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js');
+        });
+    }
 </script>
 
 </body>
