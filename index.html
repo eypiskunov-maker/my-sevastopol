@@ -135,6 +135,15 @@
             content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
             border-width: 8px 8px 0; border-style: solid; border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
         }
+        /* Анимации для оплаты ЖКХ */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; }
+        .pop-anim { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes pop { 
+            0% { transform: scale(1); } 
+            50% { transform: scale(1.15); color: #34C759; } 
+            100% { transform: scale(1); color: white; } 
+        }
     </style>
 </head>
 <body>
@@ -755,10 +764,12 @@
                 <div class="nav-title">ЖКХ</div>
                 <div style="width: 24px;"></div>
             </div>
-            <div class="weather-widget" style="padding: 24px 20px; background: linear-gradient(135deg, #2A5C8D, #4A90E2); cursor: default;">
+<div class="weather-widget" id="jkh-header-card" style="padding: 24px 20px; background: linear-gradient(135deg, #2A5C8D, #4A90E2); cursor: default; transition: background 0.5s ease;">
                 <p style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">К оплате за сентябрь</p>
-                <div class="temp" style="margin-bottom: 16px;">3 850 ₽</div>
-                <button class="btn-small" style="background: white; color: var(--accent); width: 100%; font-size: 16px; padding: 12px;">Оплатить все</button>
+                <div class="temp" id="jkh-total-amount" style="margin-bottom: 16px; display: inline-block;">3 850 ₽</div>
+                <button id="jkh-pay-btn" onclick="simulateJkhPayment()" class="btn-small" style="background: white; color: var(--accent); width: 100%; font-size: 16px; padding: 12px; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.3s ease; cursor: pointer;">
+                    Оплатить все
+                </button>
             </div>
             <h2 class="section-title">Счета</h2>
             <div class="list-item">
@@ -1033,7 +1044,42 @@
             navigator.serviceWorker.register('sw.js');
         });
     }
+// === АНИМАЦИЯ ОПЛАТЫ ЖКХ ===
+    function simulateJkhPayment() {
+        const btn = document.getElementById('jkh-pay-btn');
+        const amount = document.getElementById('jkh-total-amount');
+        const headerCard = document.getElementById('jkh-header-card');
+        
+        // 1. Включаем состояние "Обработка"
+        btn.innerHTML = '<ion-icon name="sync-outline" class="spin"></ion-icon> Обработка...';
+        btn.style.opacity = '0.9';
+        btn.style.pointerEvents = 'none'; // Блокируем повторные нажатия
 
+        // 2. Ждем 1.5 секунды (идеально для съемки)
+        setTimeout(() => {
+            // Кнопка становится успешной
+            btn.innerHTML = '<ion-icon name="checkmark-circle"></ion-icon> Оплачено';
+            btn.style.background = '#34C759'; // Зеленый цвет
+            btn.style.color = 'white';
+            
+            // Сумма прыгает и обнуляется
+            amount.classList.add('pop-anim');
+            amount.innerHTML = '0 ₽';
+            
+            // Фон карточки плавно меняется на приятный бирюзово-зеленый
+            headerCard.style.background = 'linear-gradient(135deg, #20B2AA, #2E8B57)';
+
+            // 3. Меняем все красные статусы в списке счетов на зеленые
+            const jkhList = document.querySelectorAll('#slide-jkh .list-item');
+            jkhList.forEach(item => {
+                const statusText = item.querySelector('div[style*="text-align: right"] p');
+                if (statusText && statusText.innerText.includes('Не оплачено')) {
+                    statusText.innerText = 'Оплачено';
+                    statusText.style.color = 'var(--success)';
+                }
+            });
+        }, 1500);
+    }
 </script>
 
 </body>
