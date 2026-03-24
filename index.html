@@ -144,11 +144,32 @@
             50% { transform: scale(1.15); color: #34C759; } 
             100% { transform: scale(1); color: white; } 
         }
+        /* === ЗАСТАВКА И FACE ID === */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color); z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease-out;
+        }
+        .face-id-scan { animation: pulse-scan 1.2s infinite alternate; }
+        @keyframes pulse-scan {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
 <div id="app">
+    <div id="splash-screen">
+        <img src="logo-192.png" alt="Logo" style="width: 120px; height: 120px; border-radius: 28px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+        <h2 id="splash-greeting" style="font-size: 24px; font-weight: 700; margin-bottom: 50px; color: var(--text-main); text-align: center;">Доброе утро, Константин!</h2>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; height: 100px;">
+            <ion-icon name="scan-outline" id="face-icon" class="face-id-scan" style="font-size: 64px; color: var(--accent); transition: all 0.3s ease;"></ion-icon>
+            <p id="face-text" style="margin-top: 16px; font-size: 15px; font-weight: 500; color: var(--text-muted); transition: color 0.3s ease;">Face ID</p>
+        </div>
+    </div>
 
     <div id="install-prompt" class="install-prompt">
         <img src="logo-192.png" alt="Logo" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;">
@@ -1080,6 +1101,48 @@
             });
         }, 1500);
     }
+    // === ЛОГИКА ЗАСТАВКИ И FACE ID ===
+    window.addEventListener('DOMContentLoaded', () => {
+        const splash = document.getElementById('splash-screen');
+        const faceIcon = document.getElementById('face-icon');
+        const faceText = document.getElementById('face-text');
+        const greeting = document.getElementById('splash-greeting');
+
+        // 1. Умное приветствие по времени суток
+        const hour = new Date().getHours();
+        let timeText = "Добрый день";
+        if (hour >= 5 && hour < 12) timeText = "Доброе утро";
+        else if (hour >= 18 && hour <= 23) timeText = "Добрый вечер";
+        else if (hour < 5) timeText = "Доброй ночи";
+        
+        if(greeting) greeting.innerText = `${timeText}, Константин!`;
+
+        // 2. Тайминг анимации (1.5 секунды на имитацию сканирования)
+        setTimeout(() => {
+            if(faceIcon && faceText) {
+                // Превращаем иконку в зеленую галочку
+                faceIcon.classList.remove('face-id-scan');
+                faceIcon.setAttribute('name', 'checkmark-circle');
+                faceIcon.style.color = 'var(--success)';
+                faceIcon.style.transform = 'scale(1.1)';
+                
+                // Меняем текст
+                faceText.innerText = 'Успешно';
+                faceText.style.color = 'var(--success)';
+            }
+
+            // 3. Плавно скрываем заставку еще через 0.8 секунды
+            setTimeout(() => {
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                    }, 600); // Ждем окончания CSS-анимации растворения
+                }
+            }, 800);
+            
+        }, 1500); 
+    });
 </script>
 
 </body>
