@@ -86,6 +86,58 @@
         
         .map-container { width: 100%; height: 220px; border-radius: 20px; overflow: hidden; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
+        /* === TOURISM SECTION STYLES === */
+        .tourism-map-container { width: 100%; height: 300px; border-radius: 20px; overflow: hidden; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); position: relative; }
+        .map-filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 16px; }
+        .map-filter-bar::-webkit-scrollbar { display: none; }
+        .map-filter-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; border: none; transition: all 0.2s ease; background: var(--white); color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .map-filter-btn.active { background: var(--accent); color: white; box-shadow: 0 4px 10px rgba(42,92,141,0.3); }
+        .map-filter-btn ion-icon { font-size: 16px; }
+
+        .route-card-full { background: var(--white); border-radius: 20px; padding: 0; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); overflow: hidden; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .route-card-full:active { transform: scale(0.98); }
+        .route-card-header { padding: 16px 16px 12px; }
+        .route-card-header h4 { font-size: 15px; margin-bottom: 6px; line-height: 1.3; }
+        .route-card-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+        .route-card-meta span { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-muted); }
+        .route-card-meta span ion-icon { font-size: 14px; }
+        .route-card-tags { display: flex; gap: 6px; padding: 0 16px 14px; flex-wrap: wrap; }
+        .route-tag { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+        .route-tag.walk { background: #E5F9E6; color: #34C759; }
+        .route-tag.auto { background: #E5F0FF; color: #007AFF; }
+        .route-tag.audio { background: #FFF4E5; color: #FF9500; }
+        .route-tag.bike { background: #F0E5FF; color: #AF52DE; }
+        .route-tag.new { background: #FF3B30; color: white; }
+        .route-source { font-size: 10px; color: var(--text-muted); padding: 0 16px 12px; display: flex; align-items: center; gap: 4px; }
+        .route-source a { color: var(--accent); text-decoration: none; }
+
+        .audio-card { background: var(--white); border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 14px; cursor: pointer; transition: transform 0.2s ease; }
+        .audio-card:active { transform: scale(0.98); }
+        .audio-play-btn { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 22px; transition: transform 0.2s ease; }
+        .audio-play-btn:active { transform: scale(0.9); }
+        .audio-info { flex-grow: 1; min-width: 0; }
+        .audio-info h4 { font-size: 14px; margin-bottom: 4px; line-height: 1.3; }
+        .audio-info p { font-size: 11px; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 4px; }
+        .audio-waveform { display: flex; align-items: flex-end; gap: 2px; height: 24px; flex-shrink: 0; }
+        .audio-waveform span { width: 3px; background: var(--accent); border-radius: 2px; opacity: 0.4; animation: waveform 1.2s ease infinite; }
+        .audio-waveform.playing span { opacity: 1; }
+        .audio-waveform span:nth-child(1) { height: 8px; animation-delay: 0s; }
+        .audio-waveform span:nth-child(2) { height: 16px; animation-delay: 0.1s; }
+        .audio-waveform span:nth-child(3) { height: 10px; animation-delay: 0.2s; }
+        .audio-waveform span:nth-child(4) { height: 20px; animation-delay: 0.3s; }
+        .audio-waveform span:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+        .audio-waveform span:nth-child(6) { height: 18px; animation-delay: 0.15s; }
+        .audio-waveform span:nth-child(7) { height: 6px; animation-delay: 0.25s; }
+        @keyframes waveform { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.4); } }
+
+        .landmark-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
+        .landmark-scroll::-webkit-scrollbar { display: none; }
+        .landmark-chip { display: flex; align-items: center; gap: 8px; background: var(--white); padding: 10px 14px; border-radius: 16px; min-width: fit-content; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease; }
+        .landmark-chip:active { transform: scale(0.96); }
+        .landmark-chip .lm-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .landmark-chip .lm-text { font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+
         .forecast-scroll { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 10px; margin-top: 16px; }
         .forecast-scroll::-webkit-scrollbar { display: none; }
         .forecast-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 16px; text-align: center; min-width: 60px; }
@@ -166,7 +218,21 @@
         <h2 id="splash-greeting" style="font-size: 24px; font-weight: 700; margin-bottom: 50px; color: var(--text-main); text-align: center;">Доброе утро, Константин!</h2>
         
         <div style="display: flex; flex-direction: column; align-items: center; height: 100px;">
-            <ion-icon name="scan-outline" id="face-icon" class="face-id-scan" style="font-size: 64px; color: var(--accent); transition: all 0.3s ease;"></ion-icon>
+            <svg id="face-icon" class="face-id-scan" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); transition: all 0.3s ease;">
+                <!-- Четыре угловых скобки -->
+                <path d="M4 16V6a2 2 0 0 1 2-2h10"/>
+                <path d="M40 4h10a2 2 0 0 1 2 2v10"/>
+                <path d="M52 40v10a2 2 0 0 1-2 2H40"/>
+                <path d="M16 52H6a2 2 0 0 1-2-2V40"/>
+                <!-- Левый глаз -->
+                <path d="M19 19v6"/>
+                <!-- Правый глаз -->
+                <path d="M37 19v6"/>
+                <!-- Нос -->
+                <path d="M28 20v10.5c0 2-1.5 3-3.5 3"/>
+                <!-- Рот (улыбка) -->
+                <path d="M20 39c1.5 3 5 5 8 5s6.5-2 8-5"/>
+            </svg>
             <p id="face-text" style="margin-top: 16px; font-size: 15px; font-weight: 500; color: var(--text-muted); transition: color 0.3s ease;">Face ID</p>
         </div>
     </div>
@@ -623,7 +689,7 @@
                 <div style="width: 24px;"></div>
             </div>
             
-            <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <div style="flex-grow: 1; background: var(--white); padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; color: var(--text-muted); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
                     <ion-icon name="search-outline" style="margin-right: 8px; font-size: 18px;"></ion-icon> Поиск мест и событий
                 </div>
@@ -632,31 +698,208 @@
                 </div>
             </div>
 
-            <h2 class="section-title">Маршруты и Аудиогиды</h2>
-            <div class="forecast-scroll" style="margin-top: 0;">
+            <!-- === ИНТЕРАКТИВНАЯ КАРТА ДОСТОПРИМЕЧАТЕЛЬНОСТЕЙ === -->
+            <h2 class="section-title" style="margin-top: 0;">Карта достопримечательностей</h2>
+            
+            <div class="map-filter-bar">
+                <button class="map-filter-btn active" onclick="filterMapMarkers('all', this)"><ion-icon name="apps-outline"></ion-icon> Все</button>
+                <button class="map-filter-btn" onclick="filterMapMarkers('monument', this)"><ion-icon name="flag-outline"></ion-icon> Памятники</button>
+                <button class="map-filter-btn" onclick="filterMapMarkers('museum', this)"><ion-icon name="business-outline"></ion-icon> Музеи</button>
+                <button class="map-filter-btn" onclick="filterMapMarkers('nature', this)"><ion-icon name="leaf-outline"></ion-icon> Природа</button>
+                <button class="map-filter-btn" onclick="filterMapMarkers('church', this)"><ion-icon name="heart-outline"></ion-icon> Храмы</button>
+            </div>
+
+            <div id="map-tourism" class="tourism-map-container"></div>
+
+            <!-- Быстрый доступ к достопримечательностям -->
+            <div class="landmark-scroll" style="margin-bottom: 24px;">
+                <div class="landmark-chip" onclick="focusLandmark(44.6181, 33.5266)">
+                    <div class="lm-icon" style="background: #E5F0FF; color: #007AFF;"><ion-icon name="boat-outline"></ion-icon></div>
+                    <span class="lm-text">Графская пристань</span>
+                </div>
+                <div class="landmark-chip" onclick="focusLandmark(44.6116, 33.4932)">
+                    <div class="lm-icon" style="background: #FFF4E5; color: #FF9500;"><ion-icon name="library-outline"></ion-icon></div>
+                    <span class="lm-text">Херсонес</span>
+                </div>
+                <div class="landmark-chip" onclick="focusLandmark(44.5967, 33.5836)">
+                    <div class="lm-icon" style="background: #FFECEB; color: #FF3B30;"><ion-icon name="shield-outline"></ion-icon></div>
+                    <span class="lm-text">Сапун-гора</span>
+                </div>
+                <div class="landmark-chip" onclick="focusLandmark(44.5574, 33.4060)">
+                    <div class="lm-icon" style="background: #E5F9E6; color: #34C759;"><ion-icon name="flag-outline"></ion-icon></div>
+                    <span class="lm-text">35-я батарея</span>
+                </div>
+                <div class="landmark-chip" onclick="focusLandmark(44.6186, 33.5245)">
+                    <div class="lm-icon" style="background: #F0E5FF; color: #AF52DE;"><ion-icon name="person-outline"></ion-icon></div>
+                    <span class="lm-text">Памятник Нахимову</span>
+                </div>
+            </div>
+
+            <!-- === МАРШРУТЫ С SEVASTRAVEL.RU === -->
+            <h2 class="section-title">Туристические маршруты</h2>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">Рекомендовано: <a href="https://sevastravel.ru" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: 600;">sevastravel.ru</a></p>
+            
+            <!-- Маршрут 1: 80 лет Победы -->
+            <div class="route-card-full" onclick="window.open('https://sevastravel.ru/routes/avto-peshekhodnyy-marshrut-80-let-pobedy-5-dney-4-nochi/', '_blank')">
+                <div style="background: linear-gradient(135deg, #8B0000, #CD5C5C); padding: 14px 16px; color: white; display: flex; align-items: center; gap: 10px;">
+                    <ion-icon name="ribbon-outline" style="font-size: 24px;"></ion-icon>
+                    <div>
+                        <div style="font-size: 10px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Тематический маршрут</div>
+                        <div style="font-size: 14px; font-weight: 700;">К 80-летию Великой Победы</div>
+                    </div>
+                </div>
+                <div class="route-card-header">
+                    <h4>Авто-пешеходный маршрут «80 лет Победы»</h4>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.4;">Тематический маршрут по ключевым местам героической Обороны и Освобождения Севастополя в годы ВОВ</p>
+                    <div class="route-card-meta">
+                        <span><ion-icon name="calendar-outline"></ion-icon> 4 дня / 3 ночи</span>
+                        <span><ion-icon name="walk-outline"></ion-icon> ~ 11 км пешком</span>
+                        <span><ion-icon name="car-outline"></ion-icon> Авто + Пешком</span>
+                    </div>
+                </div>
+                <div class="route-card-tags">
+                    <span class="route-tag auto">Авто</span>
+                    <span class="route-tag walk">Пешеходный</span>
+                    <span class="route-tag new">Новинка</span>
+                </div>
+                <div class="route-source">
+                    <ion-icon name="globe-outline"></ion-icon>
+                    <a href="https://sevastravel.ru" target="_blank">sevastravel.ru</a> • Туристический инфоцентр
+                </div>
+            </div>
+
+            <!-- Маршрут 2: Легендарный Севастополь -->
+            <div class="route-card-full" onclick="window.open('https://sevastravel.ru/routes/avto-peshehoniy-marshrut-legendarniy-sevastopol-3dnya-2nochi/', '_blank')">
+                <div style="background: linear-gradient(135deg, #1A2980, #26D0CE); padding: 14px 16px; color: white; display: flex; align-items: center; gap: 10px;">
+                    <ion-icon name="compass-outline" style="font-size: 24px;"></ion-icon>
+                    <div>
+                        <div style="font-size: 10px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Обзорный маршрут</div>
+                        <div style="font-size: 14px; font-weight: 700;">Визитная карточка города</div>
+                    </div>
+                </div>
+                <div class="route-card-header">
+                    <h4>Авто-пешеходный маршрут «Легендарный Севастополь»</h4>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.4;">Путешествие по самым значимым и знаковым местам — «визитным карточкам» Севастополя. Каждый день посвящён отдельной теме</p>
+                    <div class="route-card-meta">
+                        <span><ion-icon name="calendar-outline"></ion-icon> 3 дня / 2 ночи</span>
+                        <span><ion-icon name="walk-outline"></ion-icon> ~ 15 км пешком</span>
+                        <span><ion-icon name="car-outline"></ion-icon> Авто + Пешком</span>
+                    </div>
+                </div>
+                <div class="route-card-tags">
+                    <span class="route-tag auto">Авто</span>
+                    <span class="route-tag walk">Пешеходный</span>
+                </div>
+                <div class="route-source">
+                    <ion-icon name="globe-outline"></ion-icon>
+                    <a href="https://sevastravel.ru" target="_blank">sevastravel.ru</a> • Туристический инфоцентр
+                </div>
+            </div>
+
+            <!-- Дополнительные маршруты -->
+            <div class="forecast-scroll" style="margin-top: 0; margin-bottom: 8px;">
                 <div class="card" style="min-width: 200px;">
                     <h4 style="margin-bottom: 8px;">Веломаршрут<br>«Бухты Севастополя»</h4>
                     <div style="display: flex; align-items: center; color: var(--text-muted); font-size: 12px;">
                         <ion-icon name="bicycle-outline" style="margin-right: 4px;"></ion-icon> 15 км • 2.5 часа
                     </div>
+                    <div style="margin-top: 8px;"><span class="route-tag bike">Вело</span></div>
                 </div>
                 <div class="card" style="min-width: 200px;">
-                    <h4 style="margin-bottom: 8px;">Пешая прогулка<br>по центру</h4>
+                    <h4 style="margin-bottom: 8px;">Зимние истории<br>Федюхины высоты</h4>
                     <div style="display: flex; align-items: center; color: var(--text-muted); font-size: 12px;">
-                        <ion-icon name="headset-outline" style="margin-right: 4px;"></ion-icon> 2 км • 1.5 часа (Аудио)
+                        <ion-icon name="snow-outline" style="margin-right: 4px;"></ion-icon> Исторический парк
                     </div>
+                    <div style="margin-top: 8px;"><span class="route-tag walk">от 800 ₽</span></div>
+                </div>
+                <div class="card" style="min-width: 200px;">
+                    <h4 style="margin-bottom: 8px;">33 рекомендации<br>Севастополя</h4>
+                    <div style="display: flex; align-items: center; color: var(--text-muted); font-size: 12px;">
+                        <ion-icon name="star-outline" style="margin-right: 4px;"></ion-icon> Подборка мест
+                    </div>
+                    <div style="margin-top: 8px;"><span class="route-tag auto">Коллекция</span></div>
                 </div>
             </div>
 
-           <h2 class="section-title">Популярные места</h2>
-             <div class="dashboard-grid">
+            <!-- === АУДИОЭКСКУРСИИ === -->
+            <h2 class="section-title" style="margin-top: 24px;">Аудиоэкскурсии</h2>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">Включите и слушайте прямо на месте</p>
+
+            <div class="audio-card" onclick="toggleAudio(this)">
+                <div class="audio-play-btn" style="background: linear-gradient(135deg, #FF9500, #FF6B00); color: white;">
+                    <ion-icon name="play" class="play-icon"></ion-icon>
+                </div>
+                <div class="audio-info">
+                    <h4>Центр Севастополя: от Нахимова до Графской</h4>
+                    <p><ion-icon name="time-outline"></ion-icon> 45 мин • 2.3 км • 8 остановок</p>
+                </div>
+                <div class="audio-waveform">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="audio-card" onclick="toggleAudio(this)">
+                <div class="audio-play-btn" style="background: linear-gradient(135deg, #007AFF, #5856D6); color: white;">
+                    <ion-icon name="play" class="play-icon"></ion-icon>
+                </div>
+                <div class="audio-info">
+                    <h4>Херсонес Таврический: античный город</h4>
+                    <p><ion-icon name="time-outline"></ion-icon> 1 час 20 мин • 1.8 км • 12 остановок</p>
+                </div>
+                <div class="audio-waveform">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="audio-card" onclick="toggleAudio(this)">
+                <div class="audio-play-btn" style="background: linear-gradient(135deg, #34C759, #30B350); color: white;">
+                    <ion-icon name="play" class="play-icon"></ion-icon>
+                </div>
+                <div class="audio-info">
+                    <h4>35-я береговая батарея: история мужества</h4>
+                    <p><ion-icon name="time-outline"></ion-icon> 1 час 30 мин • 1.5 км • 10 остановок</p>
+                </div>
+                <div class="audio-waveform">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="audio-card" onclick="toggleAudio(this)">
+                <div class="audio-play-btn" style="background: linear-gradient(135deg, #AF52DE, #8B5CF6); color: white;">
+                    <ion-icon name="play" class="play-icon"></ion-icon>
+                </div>
+                <div class="audio-info">
+                    <h4>Балаклава: секретная бухта и крепость</h4>
+                    <p><ion-icon name="time-outline"></ion-icon> 55 мин • 2.1 км • 7 остановок</p>
+                </div>
+                <div class="audio-waveform">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="audio-card" onclick="toggleAudio(this)">
+                <div class="audio-play-btn" style="background: linear-gradient(135deg, #FF3B30, #FF6366); color: white;">
+                    <ion-icon name="play" class="play-icon"></ion-icon>
+                </div>
+                <div class="audio-info">
+                    <h4>Сапун-гора: штурм и освобождение</h4>
+                    <p><ion-icon name="time-outline"></ion-icon> 40 мин • 1.2 км • 6 остановок</p>
+                </div>
+                <div class="audio-waveform">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <!-- === ПОПУЛЯРНЫЕ МЕСТА === -->
+            <h2 class="section-title" style="margin-top: 24px;">Популярные места</h2>
+            <div class="dashboard-grid">
                 <div class="card" style="background: url('place1.jpg') center/cover; color: white; height: 140px;">
                     <div style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 20px; padding: 12px; margin: -16px; height: calc(100% + 32px); display: flex; flex-direction: column; justify-content: flex-end;">
                         <h3 style="font-size: 14px; margin-bottom: 2px;">Графская пристань</h3>
                         <p style="font-size: 10px; color: #ddd; margin: 0;">Исторический памятник</p>
                     </div>
                 </div>
-                 <div class="card" style="background: url('place2.jpg') center/cover; color: white; height: 140px;">
+                <div class="card" style="background: url('place2.jpg') center/cover; color: white; height: 140px;">
                     <div style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 20px; padding: 12px; margin: -16px; height: calc(100% + 32px); display: flex; flex-direction: column; justify-content: flex-end;">
                         <h3 style="font-size: 14px; margin-bottom: 2px;">Херсонес</h3>
                         <p style="font-size: 10px; color: #ddd; margin: 0;">Античный город, AR</p>
@@ -664,11 +907,18 @@
                 </div>
             </div>
 
+            <!-- === АФИША === -->
             <h2 class="section-title" style="margin-top: 24px;">Афиша событий</h2>
             <div class="card" style="margin-bottom: 12px;">
                 <h4 style="margin-bottom: 4px;">Спектакль «Севастопольский вальс»</h4>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Драмтеатр им. Луначарского • 15 Октября</p>
                 <button class="btn-small" style="width: 100%;">Купить билет от 500 ₽</button>
+            </div>
+
+            <div class="card" style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 4px;">Зимние истории на Федюхиных высотах</h4>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Исторический парк • Ежедневно</p>
+                <button class="btn-small" style="width: 100%; background: #EAF2F8; color: var(--accent);">Подробнее от 800 ₽</button>
             </div>
         </div>
         
@@ -918,6 +1168,26 @@
 
 <script>
     // Инициализация Яндекс Карт
+    var tourismMap;
+    var allPlacemarks = [];
+    var landmarks = [
+        { coords: [44.6181, 33.5266], name: 'Графская пристань', desc: 'Парадная пристань Севастополя, построена в 1846 г. Визитная карточка города.', type: 'monument', icon: '⛵' },
+        { coords: [44.6186, 33.5245], name: 'Памятник П.С. Нахимову', desc: 'Памятник великому русскому адмиралу на главной площади города.', type: 'monument', icon: '🗿' },
+        { coords: [44.6116, 33.4932], name: 'Херсонес Таврический', desc: 'Античный греческий полис V в. до н.э., объект ЮНЕСКО.', type: 'museum', icon: '🏛️' },
+        { coords: [44.6139, 33.5223], name: 'Панорама «Оборона Севастополя»', desc: 'Музей-панорама героической обороны 1854-1855 гг.', type: 'museum', icon: '🎨' },
+        { coords: [44.6153, 33.5246], name: 'Владимирский собор (усыпальница адмиралов)', desc: 'Храм-усыпальница русских адмиралов. Памятник архитектуры XIX века.', type: 'church', icon: '⛪' },
+        { coords: [44.6113, 33.4882], name: 'Владимирский собор в Херсонесе', desc: 'Собор на месте крещения князя Владимира в 988 году.', type: 'church', icon: '⛪' },
+        { coords: [44.6193, 33.5247], name: 'Памятник затопленным кораблям', desc: 'Символ Севастополя, установлен в 1905 г. в честь кораблей, затопленных в 1854-55 гг.', type: 'monument', icon: '⚓' },
+        { coords: [44.5967, 33.5836], name: 'Сапун-гора', desc: 'Мемориальный комплекс на месте героического штурма в 1944 году.', type: 'museum', icon: '🏔️' },
+        { coords: [44.5574, 33.4060], name: '35-я береговая батарея', desc: 'Историко-мемориальный комплекс. Последний рубеж обороны Севастополя 1942 г.', type: 'museum', icon: '🏰' },
+        { coords: [44.6201, 33.5305], name: 'Приморский бульвар', desc: 'Популярное место прогулок с видом на Севастопольскую бухту.', type: 'nature', icon: '🌿' },
+        { coords: [44.5015, 33.5960], name: 'Балаклава', desc: 'Живописная бухта с крепостью Чембало и музеем подводных лодок.', type: 'nature', icon: '🏖️' },
+        { coords: [44.6481, 33.5399], name: 'Михайловская батарея', desc: 'Артиллерийская батарея XIX века, ныне военно-морской музей.', type: 'museum', icon: '🏰' },
+        { coords: [44.6170, 33.5315], name: 'Музей Черноморского флота', desc: 'Один из старейших военно-морских музеев России, основан в 1869 г.', type: 'museum', icon: '🚢' },
+        { coords: [44.4950, 33.5876], name: 'Генуэзская крепость Чембало', desc: 'Руины средневековой крепости XIV-XV века над Балаклавской бухтой.', type: 'monument', icon: '🏰' },
+        { coords: [44.5525, 33.6151], name: 'Мыс Фиолент', desc: 'Живописный мыс вулканического происхождения с чистейшей водой.', type: 'nature', icon: '🌊' },
+    ];
+
     ymaps.ready(initMaps);
     function initMaps() {
         // Карта транспорта
@@ -945,6 +1215,83 @@
         });
         cityMap.controls.add(searchControl);
         searchControl.search('Севастополь пляж');
+
+        // === КАРТА ТУРИЗМА С ДОСТОПРИМЕЧАТЕЛЬНОСТЯМИ ===
+        tourismMap = new ymaps.Map("map-tourism", {
+            center: [44.5900, 33.5200],
+            zoom: 11,
+            controls: ['zoomControl']
+        }, {
+            zoomControlPosition: { right: 10, top: 10 }
+        });
+
+        // Цвета по типам
+        var colorMap = {
+            monument: 'islands#redDotIcon',
+            museum: 'islands#blueDotIcon',
+            nature: 'islands#greenDotIcon',
+            church: 'islands#violetDotIcon'
+        };
+
+        landmarks.forEach(function(lm) {
+            var placemark = new ymaps.Placemark(lm.coords, {
+                hintContent: lm.icon + ' ' + lm.name,
+                balloonContentHeader: '<strong>' + lm.name + '</strong>',
+                balloonContentBody: '<p style="font-size:13px;margin:4px 0;">' + lm.desc + '</p>',
+                balloonContentFooter: '<a href="https://yandex.ru/maps/?text=' + encodeURIComponent(lm.name + ' Севастополь') + '" target="_blank" style="color:#2A5C8D;">Построить маршрут →</a>'
+            }, {
+                preset: colorMap[lm.type] || 'islands#blueDotIcon'
+            });
+            placemark.landmarkType = lm.type;
+            allPlacemarks.push(placemark);
+            tourismMap.geoObjects.add(placemark);
+        });
+    }
+
+    // Фильтрация меток на карте
+    function filterMapMarkers(type, btn) {
+        document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        if (!tourismMap) return;
+        tourismMap.geoObjects.removeAll();
+        
+        allPlacemarks.forEach(function(pm) {
+            if (type === 'all' || pm.landmarkType === type) {
+                tourismMap.geoObjects.add(pm);
+            }
+        });
+    }
+
+    // Фокус на конкретной достопримечательности
+    function focusLandmark(lat, lng) {
+        if (!tourismMap) return;
+        tourismMap.setCenter([lat, lng], 15, { duration: 500 });
+        // Находим метку и открываем балун
+        allPlacemarks.forEach(function(pm) {
+            var coords = pm.geometry.getCoordinates();
+            if (Math.abs(coords[0] - lat) < 0.001 && Math.abs(coords[1] - lng) < 0.001) {
+                pm.balloon.open();
+            }
+        });
+    }
+
+    // Переключение аудио
+    function toggleAudio(card) {
+        var icon = card.querySelector('.play-icon');
+        var waveform = card.querySelector('.audio-waveform');
+        var wasPlaying = icon.getAttribute('name') === 'pause';
+        
+        // Останавливаем все другие
+        document.querySelectorAll('.audio-card').forEach(function(c) {
+            c.querySelector('.play-icon').setAttribute('name', 'play');
+            c.querySelector('.audio-waveform').classList.remove('playing');
+        });
+        
+        if (!wasPlaying) {
+            icon.setAttribute('name', 'pause');
+            waveform.classList.add('playing');
+        }
     }
 
     // Навигация
@@ -1121,10 +1468,7 @@
         setTimeout(() => {
             if(faceIcon && faceText) {
                 // Превращаем иконку в зеленую галочку
-                faceIcon.classList.remove('face-id-scan');
-                faceIcon.setAttribute('name', 'checkmark-circle');
-                faceIcon.style.color = 'var(--success)';
-                faceIcon.style.transform = 'scale(1.1)';
+                faceIcon.outerHTML = '<ion-icon name="checkmark-circle" id="face-icon" style="font-size: 64px; color: var(--success); transform: scale(1.1); transition: all 0.3s ease;"></ion-icon>';
                 
                 // Меняем текст
                 faceText.innerText = 'Успешно';
